@@ -8,7 +8,7 @@ def stream_users():
     """
     db_conn = connect_to_prodev()
     if db_conn:
-        cursor = db_conn.cursor()  # not dictionary=True, keep it tuples
+        cursor = db_conn.cursor(dictionary=True)  # not dictionary=True, keep it tuples
         cursor.execute("SELECT * FROM user_data;")
 
         # One loop only → generator yields each row directly
