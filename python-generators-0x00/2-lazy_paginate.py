@@ -12,7 +12,6 @@ def lazy_paginate(page_size):
         offset += page_size
         
 
-
 def paginate_users(page_size, offset):
     connection = seed.connect_to_prodev()
     cursor = connection.cursor(dictionary=True)
