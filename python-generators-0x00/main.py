@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 import sys
-processing = __import__('1-batch_processing')
+lazy_paginator = __import__('2-lazy_paginate').lazy_pagination
 
-##### print processed users in a batch of 50
 try:
-    for user in processing.batch_processing(50):
-        print(user)
+    for page in lazy_paginator(100):
+        for user in page:
+            print(user)
+
 except BrokenPipeError:
-    # Handle "pipe closed" when piping output (e.g. head, grep)
     sys.stderr.close()
