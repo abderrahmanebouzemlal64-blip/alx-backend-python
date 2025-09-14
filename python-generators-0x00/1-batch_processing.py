@@ -1,21 +1,29 @@
 from itertools import islice
-import importlib
+from seed import connect_to_prodev
 
 batch_size = 5
 
 def stream_users_in_batches(batch_size):
-    stream_module = importlib.import_module("0-stream_users")
-    stream_users = stream_module.stream_users
+    db_conn = connect_to_prodev()
+    if db_conn:
+        cursor = db_conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM user_data;")
 
-    for user in islice(stream_users(), batch_size):
-        if user['age'] < 25:
-            continue
-        yield user
+        while True:
+            batch = cursor.fetchmany(batch_size)
+            if not batch:
+                break
+            yield batch
+
+        cursor.close()
+        db_conn.close()
 
 def batch_processing(batch_size):
-    for user in islice(stream_users_in_batches(5), batch_size):
-        yield user
+    for batch in stream_users_in_batches(batch_size):
+        filtered = (user for user in batch if float(user['age']) > 25)
+        for user in filtered:
+            yield user
 
 if __name__ == "__main__":
-    for user in batch_processing(5):
-        print(user['age'])
+    for user in batch_processing(50):
+        print(user)
